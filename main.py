@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 
+from dataset import load_dataset
 from schemas import FeatureVectorChurn
 
 app = FastAPI()
+dataset_df = load_dataset()
 
 
 @app.get("/")
@@ -13,3 +15,18 @@ def read_root():
 @app.post("/predict")
 def predict(features: FeatureVectorChurn):
     return features
+
+
+@app.get("/dataset/preview")
+def dataset_preview(n: int = 5):
+    return dataset_df.head(n).to_dict(orient="records")
+
+
+@app.get("/dataset/info")
+def dataset_info():
+    return {
+        "rows": dataset_df.shape[0],
+        "columns": dataset_df.shape[1],
+        "feature_names": dataset_df.columns.tolist(),
+        "churn_distribution": dataset_df["churn"].value_counts().to_dict(),
+    }
