@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from dataset import load_dataset
+from preprocessing import class_distribution, prepare_features, split_dataset
 from schemas import FeatureVectorChurn
 
 app = FastAPI()
@@ -29,4 +30,16 @@ def dataset_info():
         "columns": dataset_df.shape[1],
         "feature_names": dataset_df.columns.tolist(),
         "churn_distribution": dataset_df["churn"].value_counts().to_dict(),
+    }
+
+
+@app.get("/dataset/split-info")
+def dataset_split_info():
+    X, y = prepare_features(dataset_df)
+    X_train, X_test, y_train, y_test = split_dataset(X, y)
+    return {
+        "train_size": len(X_train),
+        "test_size": len(X_test),
+        "train_churn_distribution": class_distribution(y_train),
+        "test_churn_distribution": class_distribution(y_test),
     }
