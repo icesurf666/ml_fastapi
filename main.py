@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from dataset import load_dataset
+from model import train_churn_model
 from preprocessing import class_distribution, prepare_features, split_dataset
 from schemas import FeatureVectorChurn
 
@@ -43,3 +44,12 @@ def dataset_split_info():
         "train_churn_distribution": class_distribution(y_train),
         "test_churn_distribution": class_distribution(y_test),
     }
+
+
+@app.post("/model/train")
+def model_train():
+    if dataset_df is None or dataset_df.empty:
+        raise HTTPException(status_code=400, detail="Dataset is not loaded or empty")
+
+    _, metrics = train_churn_model(dataset_df)
+    return metrics
