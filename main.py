@@ -4,8 +4,13 @@ from fastapi import FastAPI, HTTPException
 from dataset import load_dataset
 from model import train_churn_model
 from model_store import load_churn_model, save_churn_model
-from preprocessing import ALL_FEATURES, class_distribution, prepare_features, split_dataset
-from schemas import FeatureVectorChurn, PredictionResponseChurn
+from preprocessing import (
+    ALL_FEATURES,
+    class_distribution,
+    prepare_features,
+    split_dataset,
+)
+from schemas import FeatureVectorChurn, PredictionResponseChurn, TrainingConfigChurn
 
 app = FastAPI()
 dataset_df = load_dataset()
@@ -78,24 +83,43 @@ def dataset_split_info():
 
 
 @app.post("/model/train")
-def model_train():
+def model_train(config: TrainingConfigChurn | None = None):
     global model_record
+
+    config = config or TrainingConfigChurn()
 
     if dataset_df is None or dataset_df.empty:
         raise HTTPException(status_code=400, detail="Dataset is not loaded or empty")
 
-    pipeline, metrics = train_churn_model(dataset_df)
-    model_record = save_churn_model(pipeline, metrics)
+    try:
+        pipeline, metrics = train_churn_model(dataset_df, config)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
+
+    model_record = save_churn_model(
+        pipeline,
+        metrics,
+        model_type=config.model_type,
+        hyperparameters=config.hyperparameters,
+    )
     return metrics
 
 
 @app.get("/model/status")
 def model_status():
     if model_record is None:
-        return {"trained": False, "trained_at": None, "metrics": None}
+        return {
+            "trained": False,
+            "trained_at": None,
+            "metrics": None,
+            "model_type": None,
+            "hyperparameters": None,
+        }
 
     return {
         "trained": True,
         "trained_at": model_record["trained_at"],
         "metrics": model_record["metrics"],
+        "model_type": model_record["model_type"],
+        "hyperparameters": model_record["hyperparameters"],
     }

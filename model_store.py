@@ -12,14 +12,24 @@ class ModelRecord(TypedDict):
     pipeline: Pipeline
     metrics: dict
     trained_at: str
+    model_type: str
+    hyperparameters: dict
 
 
-def save_churn_model(pipeline: Pipeline, metrics: dict, path: Path = MODEL_PATH) -> ModelRecord:
+def save_churn_model(
+    pipeline: Pipeline,
+    metrics: dict,
+    model_type: str,
+    hyperparameters: dict,
+    path: Path = MODEL_PATH,
+) -> ModelRecord:
     path.parent.mkdir(parents=True, exist_ok=True)
     record: ModelRecord = {
         "pipeline": pipeline,
         "metrics": metrics,
         "trained_at": datetime.utcnow().isoformat(),
+        "model_type": model_type,
+        "hyperparameters": hyperparameters,
     }
     joblib.dump(record, path)
     return record

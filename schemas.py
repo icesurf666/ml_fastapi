@@ -21,3 +21,8 @@ class PredictionResponseChurn(BaseModel):
     churn_prediction: int
     churn_probability: float
     not_churn_probability: float
+
+
+class TrainingConfigChurn(BaseModel):
+    model_type: str = "logreg"
+    hyperparameters: dict = {}
