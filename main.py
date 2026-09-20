@@ -1,10 +1,11 @@
+import pandas as pd
 from fastapi import FastAPI, HTTPException
 
 from dataset import load_dataset
 from model import train_churn_model
 from model_store import load_churn_model, save_churn_model
-from preprocessing import class_distribution, prepare_features, split_dataset
-from schemas import FeatureVectorChurn
+from preprocessing import ALL_FEATURES, class_distribution, prepare_features, split_dataset
+from schemas import FeatureVectorChurn, PredictionResponseChurn
 
 app = FastAPI()
 dataset_df = load_dataset()
@@ -17,8 +18,36 @@ def read_root():
 
 
 @app.post("/predict")
-def predict(features: FeatureVectorChurn):
-    return features
+def predict(
+    features: FeatureVectorChurn | list[FeatureVectorChurn],
+) -> PredictionResponseChurn | list[PredictionResponseChurn]:
+    if model_record is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Model is not trained yet. Call POST /model/train first.",
+        )
+
+    is_batch = isinstance(features, list)
+    items = features if is_batch else [features]
+
+    X = pd.DataFrame([item.model_dump() for item in items])[ALL_FEATURES]
+
+    pipeline = model_record["pipeline"]
+    predictions = pipeline.predict(X)
+    probabilities = pipeline.predict_proba(X)
+    churn_col = list(pipeline.classes_).index(1)
+    not_churn_col = list(pipeline.classes_).index(0)
+
+    results = [
+        PredictionResponseChurn(
+            churn_prediction=int(pred),
+            churn_probability=float(proba[churn_col]),
+            not_churn_probability=float(proba[not_churn_col]),
+        )
+        for pred, proba in zip(predictions, probabilities)
+    ]
+
+    return results if is_batch else results[0]
 
 
 @app.get("/dataset/preview")
