@@ -6,6 +6,7 @@ from model_store import save_churn_model
 from openapi_examples import TRAIN_ERROR_RESPONSES
 from preprocessing import CATEGORICAL_FEATURES, NUMERIC_FEATURES
 from schemas import FeatureVectorChurn, TrainingConfigChurn
+from training_history import append_entry, get_history
 
 router = APIRouter(prefix="/model")
 
@@ -29,6 +30,11 @@ def model_train(config: TrainingConfigChurn | None = None):
         hyperparameters=config.hyperparameters,
     )
     state.set_model_record(record)
+    append_entry(
+        model_type=config.model_type,
+        hyperparameters=config.hyperparameters,
+        metrics=metrics,
+    )
     return metrics
 
 
@@ -43,6 +49,15 @@ def model_schema():
         "feature_types": field_types,
         "numeric_features": NUMERIC_FEATURES,
         "categorical_features": CATEGORICAL_FEATURES,
+    }
+
+
+@router.get("/metrics")
+def model_metrics(limit: int = 5, model_type: str | None = None):
+    history = get_history(model_type=model_type, limit=limit)
+    return {
+        "latest": history[0] if history else None,
+        "history": history,
     }
 
 
