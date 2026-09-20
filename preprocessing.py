@@ -21,12 +21,15 @@ CATEGORICAL_FEATURES = [
 ALL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 
 
-def prepare_features(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+def select_and_order_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df[NUMERIC_FEATURES] = df[NUMERIC_FEATURES].fillna(df[NUMERIC_FEATURES].median())
     df[CATEGORICAL_FEATURES] = df[CATEGORICAL_FEATURES].fillna("unknown")
+    return df[ALL_FEATURES]
 
-    X = df[ALL_FEATURES]
+
+def prepare_features(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+    X = select_and_order_features(df)
     y = df[TARGET_COLUMN]
     return X, y
 

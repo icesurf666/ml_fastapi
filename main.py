@@ -5,9 +5,11 @@ from dataset import load_dataset
 from model import train_churn_model
 from model_store import load_churn_model, save_churn_model
 from preprocessing import (
-    ALL_FEATURES,
+    CATEGORICAL_FEATURES,
+    NUMERIC_FEATURES,
     class_distribution,
     prepare_features,
+    select_and_order_features,
     split_dataset,
 )
 from schemas import FeatureVectorChurn, PredictionResponseChurn, TrainingConfigChurn
@@ -35,7 +37,8 @@ def predict(
     is_batch = isinstance(features, list)
     items = features if is_batch else [features]
 
-    X = pd.DataFrame([item.model_dump() for item in items])[ALL_FEATURES]
+    raw_df = pd.DataFrame([item.model_dump() for item in items])
+    X = select_and_order_features(raw_df)
 
     pipeline = model_record["pipeline"]
     predictions = pipeline.predict(X)
@@ -103,6 +106,20 @@ def model_train(config: TrainingConfigChurn | None = None):
         hyperparameters=config.hyperparameters,
     )
     return metrics
+
+
+@app.get("/model/schema")
+def model_schema():
+    field_types = {
+        name: field.annotation.__name__
+        for name, field in FeatureVectorChurn.model_fields.items()
+    }
+    return {
+        "features": list(field_types.keys()),
+        "feature_types": field_types,
+        "numeric_features": NUMERIC_FEATURES,
+        "categorical_features": CATEGORICAL_FEATURES,
+    }
 
 
 @app.get("/model/status")
