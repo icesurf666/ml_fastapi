@@ -21,8 +21,9 @@ def save_churn_model(
     metrics: dict,
     model_type: str,
     hyperparameters: dict,
-    path: Path = MODEL_PATH,
+    path: Path | None = None,
 ) -> ModelRecord:
+    path = path or MODEL_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     record: ModelRecord = {
         "pipeline": pipeline,
@@ -35,7 +36,8 @@ def save_churn_model(
     return record
 
 
-def load_churn_model(path: Path = MODEL_PATH) -> ModelRecord | None:
+def load_churn_model(path: Path | None = None) -> ModelRecord | None:
+    path = path or MODEL_PATH
     if not path.exists():
         return None
     return joblib.load(path)
