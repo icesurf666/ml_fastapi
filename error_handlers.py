@@ -3,6 +3,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from logging_config import logger
+
 STATUS_CODE_SLUGS = {
     400: "bad_request",
     404: "not_found",
@@ -26,6 +28,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        logger.warning("Validation error on %s: %s", request.url.path, exc.errors())
         return JSONResponse(
             status_code=422,
             content=_error_body(
@@ -37,6 +40,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception):
+        logger.exception("Unhandled error on %s", request.url.path)
         return JSONResponse(
             status_code=500,
             content=_error_body("internal_error", "Unexpected server error"),

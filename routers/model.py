@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 import state
+from logging_config import logger
 from model import train_churn_model
 from model_store import save_churn_model
 from openapi_examples import TRAIN_ERROR_RESPONSES
@@ -15,12 +16,20 @@ router = APIRouter(prefix="/model")
 def model_train(config: TrainingConfigChurn | None = None):
     config = config or TrainingConfigChurn()
 
+    logger.info(
+        "Training requested: model_type=%s hyperparameters=%s",
+        config.model_type,
+        config.hyperparameters,
+    )
+
     if state.dataset_df is None or state.dataset_df.empty:
+        logger.error("Training failed: dataset is not loaded or empty")
         raise HTTPException(status_code=400, detail="Dataset is not loaded or empty")
 
     try:
         pipeline, metrics = train_churn_model(state.dataset_df, config)
     except (ValueError, TypeError) as error:
+        logger.error("Training failed: %s", error)
         raise HTTPException(status_code=400, detail=str(error))
 
     record = save_churn_model(
@@ -35,6 +44,7 @@ def model_train(config: TrainingConfigChurn | None = None):
         hyperparameters=config.hyperparameters,
         metrics=metrics,
     )
+    logger.info("Training completed: model_type=%s metrics=%s", config.model_type, metrics)
     return metrics
 
 
