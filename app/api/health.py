@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-import state
+from app.core import state
 
 router = APIRouter()
 

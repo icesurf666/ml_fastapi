@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 
-import state
-from logging_config import logger
-from model import train_churn_model
-from model_store import save_churn_model
-from openapi_examples import TRAIN_ERROR_RESPONSES
-from preprocessing import CATEGORICAL_FEATURES, NUMERIC_FEATURES
-from schemas import FeatureVectorChurn, TrainingConfigChurn
-from training_history import append_entry, get_history
+from app.api.openapi_examples import TRAIN_ERROR_RESPONSES
+from app.core import state
+from app.core.logging_config import logger
+from app.ml.model import train_churn_model
+from app.ml.model_store import save_churn_model
+from app.ml.preprocessing import CATEGORICAL_FEATURES, NUMERIC_FEATURES
+from app.ml.training_history import append_entry, get_history
+from app.schemas import FeatureVectorChurn, TrainingConfigChurn
 
 router = APIRouter(prefix="/model")
 

@@ -1,6 +1,6 @@
-from dataset import load_dataset
-from logging_config import logger
-from model_store import ModelRecord, load_churn_model
+from app.core.logging_config import logger
+from app.ml.dataset import load_dataset
+from app.ml.model_store import ModelRecord, load_churn_model
 
 dataset_df = load_dataset()
 logger.info("Loaded churn dataset: %d rows, %d columns", *dataset_df.shape)

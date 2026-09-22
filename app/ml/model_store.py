@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TypedDict
 
 import joblib
 from sklearn.pipeline import Pipeline
 
-MODEL_PATH = Path(__file__).parent / "models" / "churn_model.joblib"
+MODEL_PATH = Path(__file__).parent.parent.parent / "models" / "churn_model.joblib"
 
 
 class ModelRecord(TypedDict):
@@ -28,7 +28,7 @@ def save_churn_model(
     record: ModelRecord = {
         "pipeline": pipeline,
         "metrics": metrics,
-        "trained_at": datetime.utcnow().isoformat(),
+        "trained_at": datetime.now(UTC).isoformat(),
         "model_type": model_type,
         "hyperparameters": hyperparameters,
     }

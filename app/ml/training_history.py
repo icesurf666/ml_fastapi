@@ -1,8 +1,8 @@
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
-HISTORY_PATH = Path(__file__).parent / "models" / "training_history.json"
+HISTORY_PATH = Path(__file__).parent.parent.parent / "models" / "training_history.json"
 
 
 def _load_all() -> list[dict]:
@@ -20,7 +20,7 @@ def _save_all(history: list[dict]) -> None:
 
 def append_entry(model_type: str, hyperparameters: dict, metrics: dict) -> dict:
     entry = {
-        "trained_at": datetime.utcnow().isoformat(),
+        "trained_at": datetime.now(UTC).isoformat(),
         "model_type": model_type,
         "hyperparameters": hyperparameters,
         "metrics": metrics,

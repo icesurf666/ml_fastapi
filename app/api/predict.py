@@ -1,11 +1,11 @@
 import pandas as pd
 from fastapi import APIRouter, Body, HTTPException
 
-import state
-from logging_config import logger
-from openapi_examples import PREDICT_BODY_EXAMPLES, PREDICT_ERROR_RESPONSES
-from preprocessing import select_and_order_features
-from schemas import FeatureVectorChurn, PredictionResponseChurn
+from app.api.openapi_examples import PREDICT_BODY_EXAMPLES, PREDICT_ERROR_RESPONSES
+from app.core import state
+from app.core.logging_config import logger
+from app.ml.preprocessing import select_and_order_features
+from app.schemas import FeatureVectorChurn, PredictionResponseChurn
 
 router = APIRouter()
 

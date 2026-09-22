@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from logging_config import logger
+from app.core.logging_config import logger
 
 STATUS_CODE_SLUGS = {
     400: "bad_request",

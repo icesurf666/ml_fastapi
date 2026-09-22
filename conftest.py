@@ -3,10 +3,9 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-import model_store
-import state
-import training_history
-from dataset import load_dataset
+from app.core import state
+from app.ml import model_store, training_history
+from app.ml.dataset import load_dataset
 from main import app
 
 

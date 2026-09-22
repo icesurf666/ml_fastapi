@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-import state
-from preprocessing import class_distribution, prepare_features, split_dataset
+from app.core import state
+from app.ml.preprocessing import class_distribution, prepare_features, split_dataset
 
 router = APIRouter(prefix="/dataset")
 

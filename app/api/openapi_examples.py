@@ -1,4 +1,4 @@
-from schemas import ErrorResponse
+from app.schemas import ErrorResponse
 
 PREDICT_BODY_EXAMPLES = {
     "single_client": {

@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from schemas import DatasetRowChurn
+from app.schemas import DatasetRowChurn
 
-DATASET_PATH = Path(__file__).parent / "data" / "churn_dataset.csv"
+DATASET_PATH = Path(__file__).parent.parent.parent / "data" / "churn_dataset.csv"
 
 
 def load_dataset(path: Path = DATASET_PATH) -> pd.DataFrame:

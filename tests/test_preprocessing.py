@@ -1,4 +1,4 @@
-from preprocessing import (
+from app.ml.preprocessing import (
     ALL_FEATURES,
     class_distribution,
     prepare_features,

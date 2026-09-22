@@ -1,4 +1,4 @@
-from dataset import load_dataset
+from app.ml.dataset import load_dataset
 
 
 def test_load_dataset_reads_real_csv():

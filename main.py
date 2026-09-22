@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from error_handlers import register_exception_handlers
-from logging_config import logger
-from routers import dataset, health, model, predict
+from app.api import dataset, health, model, predict
+from app.core.error_handlers import register_exception_handlers
+from app.core.logging_config import logger
 
 app = FastAPI()
 register_exception_handlers(app)

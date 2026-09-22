@@ -6,13 +6,13 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from preprocessing import (
+from app.ml.preprocessing import (
     CATEGORICAL_FEATURES,
     NUMERIC_FEATURES,
     prepare_features,
     split_dataset,
 )
-from schemas import TrainingConfigChurn
+from app.schemas import TrainingConfigChurn
 
 MODEL_TYPES = {
     "logreg": LogisticRegression,

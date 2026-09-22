@@ -3,8 +3,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
-from model import build_classifier, build_pipeline, train_churn_model
-from schemas import TrainingConfigChurn
+from app.ml.model import build_classifier, build_pipeline, train_churn_model
+from app.schemas import TrainingConfigChurn
 
 
 def test_build_classifier_logreg_returns_logistic_regression():
